@@ -565,16 +565,10 @@
               }, 50);
             };
           })();
-          console.log('[Top92] POSTing to Power Automate…');
-          console.log('[Top92] Payload sample:', { name: payload.name, email: payload.email, picks_count: payload.picks_json?.length, image_len: (payload.imageDataUrl||'').length });
           const sendPromise = fetch(APPS_SCRIPT_WEB_APP_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
-          })
-          .then(async (res) => {
-            console.log('[Top92] Response status:', res.status, res.statusText);
-            try { const txt = await res.text(); console.log('[Top92] Response body (text):', txt?.slice(0,300)); } catch(_) {}
           })
           .catch(err => {
             console.error('[Top92] POST error:', err);
