@@ -251,6 +251,17 @@
     // ========================
     const THANK_YOU_URL = 'thank-you.html';
     const APPS_SCRIPT_WEB_APP_URL = "https://defaultbfa2e364c3c248798e918c7601a4d4.38.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f892cde2433e4ec08a61b5635447974e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-xW5gKIOk_fB-RxCccg-n24LpMuvrWkQCRGVleIA_bk";
+
+    // --- DEBUG LOGGING (temporary) ---
+    console.log('[Top92] Trigger URL set to:', APPS_SCRIPT_WEB_APP_URL);
+    window.addEventListener('error', e => {
+      try { console.error('[Top92] window error:', e.message || e); } catch(_){}
+    });
+    window.addEventListener('unhandledrejection', e => {
+      try { console.error('[Top92] unhandled rejection:', e.reason || e); } catch(_){}
+    });
+    // --- END DEBUG ---
+
     // Toast helpers
     const toastEl = document.createElement('div'); // placeholder guard if #toast not yet parsed
     function showToast(msg){
@@ -565,10 +576,16 @@
               }, 50);
             };
           })();
+          console.log('[Top92] POSTing to Power Automate…');
+          console.log('[Top92] Payload sample:', { name: payload.name, email: payload.email, picks_count: payload.picks_json?.length, image_len: (payload.imageDataUrl||'').length });
           const sendPromise = fetch(APPS_SCRIPT_WEB_APP_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
+          })
+          .then(async (res) => {
+            console.log('[Top92] Response status:', res.status, res.statusText);
+            try { const txt = await res.text(); console.log('[Top92] Response body (text):', txt?.slice(0,300)); } catch(_) {}
           })
           .catch(err => {
             console.error('[Top92] POST error:', err);
