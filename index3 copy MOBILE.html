@@ -106,6 +106,32 @@
       #playerWrap{left:12px;right:12px;}
     }
 
+    /* Toast: lightweight "Submitting…" banner */
+    #toast{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%);
+      background:rgba(10,12,20,.92);
+      color:#fff;
+      border:1px solid #2a2d44;
+      border-radius:14px;
+      padding:10px 14px;
+      display:none;
+      gap:10px;
+      align-items:center;
+      z-index:9999;
+      box-shadow:0 8px 24px rgba(0,0,0,.35);
+      transition:opacity .15s ease, transform .15s ease;
+      opacity:0;
+      pointer-events:none;
+    }
+    #toast.show{display:flex;opacity:1;transform:translateX(-50%) translateY(0)}
+    #toast .dot{width:8px;height:8px;border-radius:50%;background:#79ffe1;animation:bounce .9s infinite ease-in-out}
+    #toast .dot:nth-child(2){animation-delay:.12s}
+    #toast .dot:nth-child(3){animation-delay:.24s}
+    @keyframes bounce{0%,80%,100%{transform:scale(0.8);opacity:.6}40%{transform:scale(1);opacity:1}}
+
     /* Share card uses your provided 1080x1920 background */
     #shareCard{
       width:1080px;
@@ -219,10 +245,37 @@
   </div>
 
   <script>
+    // Configured: Power Automate HTTP trigger for Digital@fresh927.com.au (OK to use in production)
     // ========================
-    // CONFIG — fill this with your Google Apps Script Web App URL
+    // CONFIG — replace with your Power Automate HTTP trigger URL
     // ========================
-    const APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzEOAlEklvqLEUJPYCxIMiKgk7uSQ_oZvejsij2HyV6v3fBmt8K4JuDnaoni4Ds6VEXRA/exec"; // your deployed Web App URL
+    const THANK_YOU_URL = 'thank-you.html';
+    const APPS_SCRIPT_WEB_APP_URL = "https://defaultbfa2e364c3c248798e918c7601a4d4.38.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f892cde2433e4ec08a61b5635447974e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-xW5gKIOk_fB-RxCccg-n24LpMuvrWkQCRGVleIA_bk";
+
+    // --- DEBUG LOGGING (temporary) ---
+    console.log('[Top92] Trigger URL set to:', APPS_SCRIPT_WEB_APP_URL);
+    window.addEventListener('error', e => {
+      try { console.error('[Top92] window error:', e.message || e); } catch(_){}
+    });
+    window.addEventListener('unhandledrejection', e => {
+      try { console.error('[Top92] unhandled rejection:', e.reason || e); } catch(_){}
+    });
+    // --- END DEBUG ---
+
+    // Toast helpers
+    const toastEl = document.createElement('div'); // placeholder guard if #toast not yet parsed
+    function showToast(msg){
+      const t = document.getElementById('toast') || toastEl;
+      const txt = document.getElementById('toastText');
+      if (txt && msg) txt.textContent = msg;
+      if (t && t.classList) { t.classList.add('show'); t.style.display = 'flex'; }
+    }
+    function hideToast(){
+      const t = document.getElementById('toast');
+      if (!t) return;
+      t.classList.remove('show');
+      setTimeout(()=>{ t.style.display='none'; }, 150);
+    }
 
     // ========================
     // DATA — embedded from Excel (with Spotify/YouTube/SoundCloud links)
@@ -476,8 +529,12 @@
 
     async function handleSubmit(){
       if (submitBtn.disabled) return;
+      const oldBtnText = submitBtn.textContent;
+      submitBtn.textContent = 'Sending from Digital@fresh927.com.au…';
+      submitBtn.style.opacity = '0.8';
       statusEl.textContent = 'Generating your share image…';
       submitBtn.disabled = true;
+      showToast('Submitting your vote… sending from Digital@fresh927.com.au');
 
       // Build share card list
       const shareList = document.getElementById('shareList');
@@ -495,33 +552,72 @@
         console.warn('html2canvas failed; continuing without image', err);
       }
 
-      // Send to your Apps Script (stores + emails with attachment)
+      // Send to Power Automate (stores + emails with attachment)
       if (APPS_SCRIPT_WEB_APP_URL){
         try{
-          const body = new URLSearchParams();
-          body.set('name', nameEl.value.trim());
-          body.set('mobile', mobileEl.value.trim());
-          body.set('email', emailEl.value.trim());
-          body.set('picks_json', JSON.stringify(picksArr));
-          body.set('imageDataUrl', dataURL);
-          body.set('ua', navigator.userAgent);
-          // Fire-and-forget to Apps Script (avoid CORS issues when opened from file://)
-          const goThanks = (()=>{ let done=false; return ()=>{ if(done) return; done=true; window.location.href='thank-you.html'; }; })();
-          const sendPromise = fetch(APPS_SCRIPT_WEB_APP_URL, { method:'POST', mode:'no-cors', body }).catch(()=>{});
-          // Redirect when the request resolves, or after a short grace period
-          sendPromise.then(()=>{ statusEl.textContent = 'Done! Check your email for the image. Thanks for voting.'; goThanks(); });
-          setTimeout(goThanks, 2500);
+          const payload = {
+            name: nameEl.value.trim(),
+            mobile: mobileEl.value.trim(),
+            email: emailEl.value.trim(),
+            picks_json: picksArr,
+            imageDataUrl: dataURL,
+            ua: navigator.userAgent
+          };
+          // Fire-and-forget to Power Automate (avoid CORS issues when opened from file://)
+          const goThanks = (() => {
+            let done = false;
+            return () => {
+              if (done) return;
+              done = true;
+              // slight delay lets UI settle on some mobile browsers
+              setTimeout(() => {
+                try { window.location.replace(THANK_YOU_URL); }
+                catch (_) { window.location.href = THANK_YOU_URL; }
+              }, 50);
+            };
+          })();
+          console.log('[Top92] POSTing to Power Automate…');
+          console.log('[Top92] Payload sample:', { name: payload.name, email: payload.email, picks_count: payload.picks_json?.length, image_len: (payload.imageDataUrl||'').length });
+          const sendPromise = fetch(APPS_SCRIPT_WEB_APP_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          })
+          .then(async (res) => {
+            console.log('[Top92] Response status:', res.status, res.statusText);
+            try { const txt = await res.text(); console.log('[Top92] Response body (text):', txt?.slice(0,300)); } catch(_) {}
+          })
+          .catch(err => {
+            console.error('[Top92] POST error:', err);
+          })
+          .finally(() => {
+            goThanks();
+          });
+          // extra failsafe in case promises are halted by the browser
+          setTimeout(goThanks, 1500);
         }catch(err){
+          hideToast();
+          submitBtn.textContent = oldBtnText;
+          submitBtn.style.opacity = '1';
+          submitBtn.disabled = false;
           console.error(err);
           statusEl.textContent = 'We saved your vote, but emailing the image failed. A preview will open — save it manually.';
           const win = window.open(); if (win){ const img=new Image(); img.src=dataURL; win.document.body.style.margin='0'; win.document.body.appendChild(img); }
         }
       } else {
+        showToast('Submitting your vote…');
         // Fallback: open the image so the voter can save it
         statusEl.textContent = 'Almost there! We could not send the email because the endpoint is not set. A preview will open — save it.';
         const win = window.open(); if (win){ const img=new Image(); img.src=dataURL; win.document.body.style.margin='0'; win.document.body.appendChild(img); }
-        setTimeout(()=>{ window.location.href = 'thank-you.html'; }, 1200);
+        window.location.replace(THANK_YOU_URL);
       }
+      // Failsafe: restore button if navigation does not occur
+      setTimeout(()=>{
+        submitBtn.textContent = oldBtnText;
+        submitBtn.style.opacity = '1';
+        submitBtn.disabled = false;
+        hideToast();
+      }, 6000);
     }
 
     // Init
@@ -529,5 +625,11 @@
     renderList();
     updateSelectedUI();
   </script>
+
+  <!-- Submitting toast -->
+  <div id="toast" role="status" aria-live="polite" aria-atomic="true">
+    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    <span id="toastText">Submitting…</span>
+  </div>
 </body>
 </html>
