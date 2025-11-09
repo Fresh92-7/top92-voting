@@ -1,0 +1,1171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Fresh 92.7 — Top 92 Voting</title>
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Exo+2:wght@300;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --fresh-blue:#00c2b3;
+      --purple:#ff4fad;
+      --cyan:#ffd166;
+      --bg:#0b0b12;
+      --panel:#10121c;
+      --muted:#b3b8c2;
+      --text:#ffffff;
+      --sunset-1:#ff9a3c; /* strong logo orange */
+      --sunset-2:#ffb56b; /* soft peach transition */
+      --sunset-3:#7fd6ff; /* gentle ocean blue */
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:'Exo 2',system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      background-color:var(--bg);
+      color:var(--text);
+      position:relative;
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    /* Background (matches voting page aesthetic) */
+    body::before{
+      content:'';
+      position:fixed;
+      inset:0;
+      background:
+        linear-gradient(180deg, rgba(5,8,15,.70), rgba(5,8,15,.45)),
+        url('https://www.journee-mondiale.com/en/wp-content/uploads/2024/11/msg_01R4J6e5BTseBK6PNsLBfEKC.webp')
+          center / cover no-repeat;
+      transform:scaleX(-1);
+      z-index:-1;
+      pointer-events:none;
+    }
+
+    header{display:none}
+
+    .wrap{
+      max-width:1140px;
+      margin:0 auto;
+      padding:16px;
+    }
+
+    main.wrap{margin-bottom:0}
+
+    .box{
+      background:rgba(16,18,28,.72);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      padding:14px;
+      backdrop-filter:blur(6px);
+    }
+
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    select{
+      background:#0f1020;
+      border:1px solid #262a43;
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:10px;
+      outline:none;
+      min-width:170px;
+      min-height:44px;
+    }
+
+    label.small{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .btn{
+      border:0;
+      border-radius:10px;
+      padding:10px 12px;
+      font-weight:700;
+      font-family:'Exo 2',sans-serif;
+      letter-spacing:.3px;
+      color:#1b0f12;
+      background:linear-gradient(135deg, var(--sunset-1), var(--sunset-2) 55%, var(--sunset-3));
+      box-shadow:0 6px 16px rgba(17,25,40,.22);
+      cursor:pointer;
+      min-height:44px;
+      touch-action:manipulation;
+    }
+
+    .btn.secondary{
+      background:rgba(255,255,255,.08);
+      color:var(--text);
+    }
+
+    .btn.ghost{
+      background:transparent;
+      color:var(--text);
+      border:1px solid #2a2d44;
+    }
+
+    .btn:disabled{
+      opacity:.5;
+      cursor:not-allowed;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      color:var(--text);
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+    }
+
+    .votes-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      margin:0 0 8px;
+    }
+
+    .votes-header h3{
+      margin:0;
+      font-family:'Russo One',sans-serif;
+      letter-spacing:.4px;
+      font-size:20px;
+    }
+
+    .votes-header .pill{
+      margin:0;
+    }
+
+    .az{
+      display:grid;
+      grid-template-columns:repeat(14, max-content);
+      gap:10px;
+      justify-content:flex-start;
+    }
+
+    .az-top{
+      display:grid;
+      grid-template-columns:minmax(0,2.2fr) minmax(260px,1.4fr);
+      gap:16px;
+      align-items:flex-start;
+    }
+
+    .az-left{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .az-form{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      align-items:stretch;
+      justify-content:flex-start;
+    }
+
+    .az-form-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:8px;
+    }
+
+    .az-form-grid input,
+    .az-form-grid button{
+      width:100%;
+      min-height:44px;
+    }
+
+    .az-note{
+      margin:0;
+      display:block;
+    }
+
+    .az button{
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      color:#e3e7f0;
+      padding:6px 8px;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:700;
+      width:100%;
+      min-height:36px;
+      touch-action:manipulation;
+    }
+
+    .az button.active{
+      border-color:transparent;
+      color:#1b0f12;
+      background:linear-gradient(135deg, var(--sunset-1), var(--sunset-2) 55%, var(--sunset-3));
+    }
+
+    .az button:disabled{
+      opacity:.35;
+      cursor:not-allowed;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:16px;
+    }
+
+    @media (max-width:900px){
+      .layout{grid-template-columns:1fr}
+    }
+
+    .az-wrap{
+      grid-column:1 / -1;
+      margin-bottom:16px;
+    }
+
+    .az-wrap .controls{
+      margin-bottom:8px;
+    }
+
+    .list{
+      max-height:62vh;
+      overflow:auto;
+      border-radius:16px;
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns:1fr auto auto;
+      gap:10px;
+      padding:10px 12px;
+      border-bottom:1px solid #1d1f33;
+      align-items:center;
+    }
+
+    .row:hover{
+      background:rgba(255,255,255,.04);
+    }
+
+    .row .meta{
+      display:flex;
+      flex-direction:column;
+    }
+
+    .song{
+      font-weight:800;
+    }
+
+    .artist{
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .row .actions{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+
+    .selected{
+      max-height:62vh;
+      overflow:auto;
+    }
+
+    .sel-item{
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      padding:10px 12px;
+      border-bottom:1px solid #1d1f33;
+    }
+
+    .muted{
+      color:var(--muted);
+    }
+
+    .counter{
+      font-weight:900;
+    }
+
+    footer{
+      margin:8px 0 0;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    /* Overlay logo */
+    .overlay-logo{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:18px 0 6px;
+      position:relative;
+      z-index:3;
+    }
+
+    .overlay-logo img{
+      width:min(60vw,560px);
+      height:auto;
+      filter:drop-shadow(0 8px 18px rgba(0,0,0,.45));
+    }
+    .overlay-logo .fresh-logo {
+        position: absolute;
+        left: 57%;
+        top: 17px; 
+        transform: translateX(-50%);
+        width: 220px;
+        max-width: 50%;
+        height: auto;
+        z-index: 7; /* above the main logo */
+        pointer-events: none;
+    }
+
+    /* Desktop: logo left, interface right */
+    @media (min-width:1024px){
+      body{
+        display:grid;
+        grid-template-columns:minmax(260px,26vw) minmax(0,1fr);
+        gap:32px;
+        align-items:start;
+        align-content:start;
+        grid-auto-rows:min-content;
+      }
+      .overlay-logo{
+        grid-column:1;
+        position:sticky;
+        top:4vh;
+        padding:12px 0 0;
+        height:auto;
+        flex-direction:column;
+        justify-content:flex-start;
+        align-items:flex-start;
+        padding-left:24px;
+      }
+      .overlay-logo img{
+        width:min(31vw,390px);
+      }
+      .wrap{
+        grid-column:2;
+        max-width:960px;
+        margin:36px 4vw 28px 0;
+      }
+      #playerWrap .player-body{flex:1;gap:8px}
+      #playerWrap .player-controls{flex:1;display:flex}
+      #playerWrap .player-controls iframe{height:100%}
+    }
+
+    /* Mobile optimisations */
+    @media (max-width:600px){
+      .wrap{padding:12px}
+      .overlay-logo{padding:12px 0 0}
+      .overlay-logo img{width:min(78vw,360px)}
+      .az-wrap .controls{
+        display:grid;
+        grid-template-columns:1fr;
+        gap:8px;
+      }
+      .az{
+        display:flex;
+        overflow-x:auto;
+        gap:8px;
+        padding-bottom:6px;
+        scroll-snap-type:x mandatory;
+      }
+      .az button{
+        flex:0 0 auto;
+        min-width:40px;
+        scroll-snap-align:start;
+      }
+      .list{max-height:58vh}
+      .row{
+        grid-template-columns:1fr auto;
+        align-items:start;
+      }
+      .row .actions{gap:6px}
+      .controls{gap:8px}
+      .box{
+        padding:12px;
+        border-radius:14px;
+      }
+      input[type="text"],
+      input[type="email"],
+      input[type="tel"],
+      select{
+        min-width:0;
+        width:100%;
+      }
+      footer{margin:14px 0}
+      #playerWrap{
+        left:12px;
+        right:12px;
+        bottom:12px;
+        max-width:none;
+        width:auto;
+      }
+      .az-top{
+        grid-template-columns:1fr;
+        gap:12px;
+      }
+      .az-form-grid{
+        grid-template-columns:1fr;
+      }
+      .az-note{
+        margin-top:2px;
+      }
+    }
+
+    /* Toast */
+    #toast{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%);
+      background:rgba(10,12,20,.92);
+      color:#fff;
+      border:1px solid #2a2d44;
+      border-radius:14px;
+      padding:10px 14px;
+      display:none;
+      gap:10px;
+      align-items:center;
+      z-index:9999;
+      box-shadow:0 8px 24px rgba(0,0,0,.35);
+      transition:opacity .15s ease, transform .15s ease;
+      opacity:0;
+      pointer-events:none;
+    }
+
+    #toast.show{
+      display:flex;
+      opacity:1;
+      transform:translateX(-50%) translateY(0);
+    }
+
+    #toast .dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:#79ffe1;
+      animation:bounce .9s infinite ease-in-out;
+    }
+
+    #toast .dot:nth-child(2){animation-delay:.12s}
+    #toast .dot:nth-child(3){animation-delay:.24s}
+
+    @keyframes bounce{
+      0%,80%,100%{transform:scale(0.8);opacity:.6}
+      40%{transform:scale(1);opacity:1}
+    }
+
+    /* Share card (for html2canvas capture only) */
+    #shareCard{
+      width:1080px;
+      height:1920px;
+      background:url('Top 92 My 10 Favourites.jpeg') center/cover no-repeat;
+      color:#fff;
+      padding:400px 160px 260px;
+      position:absolute;
+      display:none;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      gap:24px;
+      left:0;
+      top:0;
+    }
+
+    #shareCard ol{
+      list-style:none;
+      margin:0;
+      padding:0;
+      width:100%;
+      max-width:720px;
+      font-size:42px;
+      line-height:1.38;
+      font-weight:600;
+      letter-spacing:.2px;
+      text-shadow:0 4px 14px rgba(0,0,0,.55);
+    }
+
+    #shareCard ol li{
+      margin:0 0 28px;
+    }
+
+    #shareCard ol li:last-child{
+      margin-bottom:0;
+    }
+
+    #status{
+      font-size:14px;
+      color:var(--muted);
+    }
+
+    /* Preview player */
+    #playerWrap{
+      position:fixed;
+      left:16px;
+      bottom:16px;
+      background:#0f0f18;
+      border:1px solid #242842;
+      border-radius:18px;
+      padding:18px;
+      display:none;
+      flex-direction:column;
+      z-index:2; /* keep below overlay-logo (z-index:3) so logo is never covered */
+      box-shadow:0 18px 36px rgba(0,0,0,.32);
+      max-width:340px;
+      width:min(340px,40vw);
+      box-sizing:border-box;
+      min-height:180px;
+      overflow:hidden;
+    }
+
+    @media (min-width:1024px){
+      #playerWrap{
+        left:4vw;
+        right:auto;
+      }
+    }
+
+    #playerHead{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:12px;
+      gap:8px;
+    }
+
+    #playerWrap strong{
+      font-size:16px;
+      letter-spacing:.2px;
+    }
+
+    #closePlayer{
+      background:transparent;
+      border:1px solid #2a2d44;
+      color:#fff;
+      border-radius:999px;
+      padding:4px 12px;
+      cursor:pointer;
+      font-weight:600;
+    }
+
+    #playerWrap .player-body{
+      display:none; /* we’re using a clean embed-only layout */
+    }
+
+    #playerWrap .player-controls{
+      border-radius:14px;
+      overflow:hidden;
+      background:#04060d;
+    }
+
+    #playerWrap .player-controls iframe{
+      width:100%;
+      border:0;
+      height:180px;
+      display:block;
+      transform:none;
+    }
+
+    #playerWrap.youtube .player-controls iframe,
+    #playerWrap.soundcloud .player-controls iframe{
+      height:200px;
+    }
+  </style>
+
+  <!-- External libs for share image + songs data -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="songs-2025.js"></script>
+</head>
+<body>
+  <div class="overlay-logo">
+    <img src="Blue Fresh Transparent.png" alt="Fresh 92.7 logo" class="fresh-logo">
+    <img src="Spotify Cover.png" alt="Top 92 red vinyl logo">
+  </div>
+
+  <main class="wrap">
+    <div class="box az-wrap">
+      <div class="az-top">
+        <div class="az-left">
+          <div class="controls">
+            <input id="search" type="text" placeholder="Search by song or artist…">
+            <select id="viewBy">
+              <option value="title">Browse by Title (A–Z)</option>
+              <option value="artist">Browse by Artist (A–Z)</option>
+            </select>
+            <span id="status"></span>
+          </div>
+          <div id="az" class="az"></div>
+        </div>
+        <div class="az-form">
+          <div class="az-form-grid">
+            <input id="name" type="text" placeholder="Full name" required>
+            <input id="mobile" type="tel" placeholder="Mobile" required>
+            <input id="email" type="email" placeholder="Email" required>
+            <button id="submitBtn" class="btn" disabled>Submit my 10 votes</button>
+          </div>
+          <label class="small az-note">
+            We’ll email your share image and securely store your votes for tallying.
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <div class="box">
+        <div id="list" class="list" role="list"></div>
+      </div>
+      <div class="box">
+        <div class="votes-header">
+          <h3>My Votes</h3>
+          <label class="pill">Selected: <span id="count" class="counter">0</span>/10</label>
+        </div>
+        <p class="muted" style="margin:0 0 10px">
+          Tap Add/Remove to curate exactly 10.
+        </p>
+        <div id="selected" class="selected"></div>
+      </div>
+    </div>
+    <footer></footer>
+  </main>
+
+  <!-- Hidden share card for html2canvas capture -->
+  <div id="shareCard">
+    <ol id="shareList" aria-label="Your Top 10 picks"></ol>
+  </div>
+
+  <!-- Reusable media player -->
+  <div id="playerWrap">
+    <div id="playerHead">
+      <strong>Preview</strong>
+      <button id="closePlayer">Close</button>
+    </div>
+    <div class="player-body">
+      <div class="player-info">
+        <div id="playerTitle">Choose a track to preview</div>
+        <div id="playerArtist" class="muted">Preview will play below.</div>
+      </div>
+    </div>
+    <div class="player-controls">
+      <iframe id="mediaPlayer"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin">
+      </iframe>
+    </div>
+  </div>
+
+  <script>
+    // Submission config (Power Automate)
+    const THANK_YOU_URL = 'thank-you.html'; // ensure this file exists / matches your thank you page name
+    const POWER_AUTOMATE_URL = "https://defaultbfa2e364c3c248798e918c7601a4d4.38.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f892cde2433e4ec08a61b5635447974e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-xW5gKIOk_fB-RxCccg-n24LpMuvrWkQCRGVleIA_bk";
+
+    // Toast helpers
+    const toastEl = document.createElement('div');
+    function showToast(msg){
+      const t = document.getElementById('toast') || toastEl;
+      const txt = document.getElementById('toastText');
+      if (txt && msg) txt.textContent = msg;
+      if (t && t.classList){
+        t.classList.add('show');
+        t.style.display = 'flex';
+      }
+    }
+    function hideToast(){
+      const t = document.getElementById('toast');
+      if (!t) return;
+      t.classList.remove('show');
+      setTimeout(()=>{ t.style.display='none'; }, 150);
+    }
+
+    // Data
+    let songs = (window.SONGS_2025 || []).slice();
+
+    // State
+    const selected = new Map();
+    let currentLetter = 'All';
+    let viewBy = 'title';
+    let query = '';
+
+    // Elements
+    const listEl    = document.getElementById('list');
+    const selEl     = document.getElementById('selected');
+    const countEl   = document.getElementById('count');
+    const azEl      = document.getElementById('az');
+    const searchEl  = document.getElementById('search');
+    const viewByEl  = document.getElementById('viewBy');
+    const submitBtn = document.getElementById('submitBtn');
+    const statusEl  = document.getElementById('status');
+    const nameEl    = document.getElementById('name');
+    const mobileEl  = document.getElementById('mobile');
+    const emailEl   = document.getElementById('email');
+
+    // Build A–Z filter
+    function buildAZ(){
+      azEl.innerHTML = '';
+      const letters = new Set(
+        songs
+          .map(s => (s[viewBy] || '').trim()[0]?.toUpperCase())
+          .filter(Boolean)
+      );
+      const hasNonAlpha = songs.some(s => {
+        const ch = (s[viewBy] || '').trim()[0];
+        return ch && !/[A-Za-z]/.test(ch);
+      });
+
+      const allBtn = document.createElement('button');
+      allBtn.textContent = 'All';
+      allBtn.className = 'active';
+      allBtn.addEventListener('click', () => {
+        currentLetter = 'All';
+        setAZActive(allBtn);
+        renderList();
+      });
+      azEl.appendChild(allBtn);
+
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(ch => {
+        const btn = document.createElement('button');
+        btn.textContent = ch;
+        if (!letters.has(ch)) btn.disabled = true;
+        btn.addEventListener('click', () => {
+          currentLetter = ch;
+          setAZActive(btn);
+          renderList();
+        });
+        azEl.appendChild(btn);
+      });
+
+      const hashBtn = document.createElement('button');
+      hashBtn.textContent = '#';
+      if (!hasNonAlpha) hashBtn.disabled = true;
+      hashBtn.addEventListener('click', () => {
+        currentLetter = '#';
+        setAZActive(hashBtn);
+        renderList();
+      });
+      azEl.appendChild(hashBtn);
+    }
+
+    function setAZActive(activeBtn){
+      azEl.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      activeBtn.classList.add('active');
+    }
+
+    // Render song list
+    function renderList(){
+      listEl.innerHTML = '';
+
+      if (!songs.length){
+        const n = document.createElement('div');
+        n.className = 'muted';
+        n.style.padding = '16px';
+        n.textContent = 'No songs available.';
+        listEl.appendChild(n);
+        return;
+      }
+
+      const q = query.toLowerCase();
+      const filtered = songs
+        .filter(s => {
+          const matchesQuery = q
+            ? (`${s.title} ${s.artist}`.toLowerCase().includes(q))
+            : true;
+
+          const rawFirst = (s[viewBy] || '').trim()[0] || '';
+          const first = rawFirst.toUpperCase();
+
+          let matchesLetter;
+          if (currentLetter === 'All'){
+            matchesLetter = true;
+          } else if (currentLetter === '#'){
+            matchesLetter = rawFirst && !/[A-Za-z]/.test(rawFirst);
+          } else {
+            matchesLetter = (first === currentLetter);
+          }
+
+          return matchesQuery && matchesLetter;
+        })
+        .sort((a, b) => (a[viewBy] || '').localeCompare(b[viewBy] || ''));
+
+      if (!filtered.length){
+        const empty = document.createElement('div');
+        empty.className = 'muted';
+        empty.style.padding = '16px';
+        empty.textContent = 'No songs match your filters.';
+        listEl.appendChild(empty);
+        return;
+      }
+
+      filtered.forEach(s => {
+        const key = `${s.artist} — ${s.title}`;
+        const row = document.createElement('div');
+        row.className = 'row';
+
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+
+        const t = document.createElement('div');
+        t.className = 'song';
+        t.textContent = s.title;
+
+        const a = document.createElement('div');
+        a.className = 'artist';
+        a.textContent = s.artist;
+
+        meta.appendChild(t);
+        meta.appendChild(a);
+
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+
+        const preview = document.createElement('button');
+        preview.className = 'btn secondary';
+        preview.textContent = 'Preview';
+        preview.title = 'Play preview';
+        preview.disabled = !(s.spotify || s.youtube || s.soundcloud);
+        preview.addEventListener('click', () => openPreview(s));
+
+        const add = document.createElement('button');
+        add.className = 'btn';
+        add.textContent = selected.has(key) ? 'Remove' : 'Add';
+        add.style.minWidth = '92px';
+        add.addEventListener('click', () => toggleSelect(s));
+
+        actions.appendChild(preview);
+        actions.appendChild(add);
+
+        row.appendChild(meta);
+        row.appendChild(actions);
+        listEl.appendChild(row);
+      });
+
+      refreshButtonsEnabled();
+    }
+
+    function toggleSelect(song){
+      const key = `${song.artist} — ${song.title}`;
+      if (selected.has(key)){
+        selected.delete(key);
+      } else {
+        if (selected.size >= 10){
+          alert('You can only select exactly 10 songs. Remove one to add another.');
+          return;
+        }
+        selected.set(key, song);
+      }
+      updateSelectedUI();
+      renderList();
+    }
+
+    function updateSelectedUI(){
+      selEl.innerHTML = '';
+      const arr = Array.from(selected.values());
+      arr.forEach((s, idx) => {
+        const item = document.createElement('div');
+        item.className = 'sel-item';
+        item.innerHTML =
+          `<div><strong>${idx+1}.</strong> ${s.title} <span class="muted">— ${s.artist}</span></div>`;
+        const rm = document.createElement('button');
+        rm.className = 'btn ghost';
+        rm.textContent = 'Remove';
+        rm.addEventListener('click', () => {
+          selected.delete(`${s.artist} — ${s.title}`);
+          updateSelectedUI();
+          renderList();
+        });
+        item.appendChild(rm);
+        selEl.appendChild(item);
+      });
+      countEl.textContent = selected.size;
+      validateForm();
+    }
+
+    function refreshButtonsEnabled(){
+      if (selected.size >= 10){
+        listEl.querySelectorAll('.row').forEach(row => {
+          const title = row.querySelector('.song').textContent;
+          const artist = row.querySelector('.artist').textContent;
+          const key = `${artist} — ${title}`;
+          const btns = row.querySelectorAll('.btn');
+          const addBtn = btns[btns.length - 1];
+          if (!selected.has(key)){
+            addBtn.disabled = true;
+            addBtn.textContent = 'Full';
+          } else {
+            addBtn.disabled = false;
+            addBtn.textContent = 'Remove';
+          }
+        });
+      } else {
+        listEl.querySelectorAll('.row').forEach(row => {
+          const title = row.querySelector('.song').textContent;
+          const artist = row.querySelector('.artist').textContent;
+          const key = `${artist} — ${title}`;
+          const btns = row.querySelectorAll('.btn');
+          const addBtn = btns[btns.length - 1];
+          addBtn.disabled = false;
+          addBtn.textContent = selected.has(key) ? 'Remove' : 'Add';
+        });
+      }
+    }
+
+    // Search + viewBy
+    searchEl.addEventListener('input', e => {
+      query = e.target.value;
+      currentLetter = 'All';
+      setAZActive(azEl.querySelector('button'));
+      renderList();
+    });
+
+    viewByEl.addEventListener('change', e => {
+      viewBy = e.target.value;
+      currentLetter = 'All';
+      buildAZ();
+      renderList();
+    });
+
+    // Preview player
+    const playerWrap      = document.getElementById('playerWrap');
+    const player          = document.getElementById('mediaPlayer');
+    const playerTitleEl   = document.getElementById('playerTitle');
+    const playerArtistEl  = document.getElementById('playerArtist');
+    const closePlayerBtn  = document.getElementById('closePlayer');
+
+    closePlayerBtn.addEventListener('click', () => {
+      playerWrap.style.display = 'none';
+      playerWrap.classList.remove('spotify','youtube','soundcloud');
+      player.src = '';
+      playerTitleEl.textContent = 'Choose a track to preview';
+      playerArtistEl.textContent = 'Preview will play below.';
+    });
+
+    function openPreview(song){
+      if (!song) return;
+
+      let src = '';
+      let height = 152;
+      let isSpotify = false;
+
+      playerWrap.classList.remove('spotify','youtube','soundcloud');
+
+      playerTitleEl.textContent = song.title;
+      playerArtistEl.textContent = song.artist;
+
+      // Spotify
+      if (song.spotify){
+        let url = song.spotify;
+        if (!url.startsWith('http')){
+          url = `https://open.spotify.com/track/${url}`;
+        }
+        src = url
+          .replace('open.spotify.com/track','open.spotify.com/embed/track')
+          + '?utm_source=generator&theme=0&autoplay=1';
+        height = 152;
+        playerWrap.classList.add('spotify');
+        isSpotify = true;
+      }
+      // YouTube
+      else if (song.youtube){
+        let yt = String(song.youtube).trim();
+        const srcAttr = yt.match(/src\s*=\s*"([^"]+)"/i);
+        if (srcAttr) yt = srcAttr[1];
+        const idMatch = yt.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{6,})/);
+        const id = idMatch ? idMatch[1] : '';
+        if (id){
+          src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+          height = 180;
+          playerWrap.classList.add('youtube');
+        }
+      }
+      // SoundCloud
+      else if (song.soundcloud){
+        const sc = encodeURIComponent(song.soundcloud.trim());
+        src = `https://w.soundcloud.com/player/?url=${sc}&auto_play=true&hide_related=true&show_comments=false&visual=false`;
+        height = 180;
+        playerWrap.classList.add('soundcloud');
+      }
+
+      if (!src) return;
+
+      player.setAttribute('allowfullscreen','');
+      player.style.height = height + 'px';
+
+      // Autoplay nudge for Spotify (smooth, incl. first click)
+      if (isSpotify){
+        const tryPlay = () => {
+          try { player.contentWindow.postMessage({ command:'play' }, '*'); } catch(e){}
+          try { player.contentWindow.postMessage(JSON.stringify({ command:'play' }), '*'); } catch(e){}
+        };
+        const onLoad = () => {
+          player.removeEventListener('load', onLoad);
+          setTimeout(tryPlay, 200);
+        };
+        player.addEventListener('load', onLoad);
+      }
+
+      player.src = src;
+      playerWrap.style.display = 'flex';
+    }
+
+    // Form validation
+    [nameEl, mobileEl, emailEl].forEach(el =>
+      el.addEventListener('input', validateForm)
+    );
+
+    function validateForm(){
+      const ok =
+        selected.size === 10 &&
+        nameEl.value.trim() &&
+        mobileEl.value.trim() &&
+        emailEl.value.trim();
+      submitBtn.disabled = !ok;
+    }
+
+    // Submit handler
+    submitBtn.addEventListener('click', handleSubmit);
+
+    async function handleSubmit(){
+      if (submitBtn.disabled) return;
+
+      const oldBtnText = submitBtn.textContent;
+      submitBtn.textContent = 'Sending from Digital@fresh927.com.au…';
+      submitBtn.style.opacity = '0.8';
+      statusEl.textContent = 'Generating your share image…';
+      submitBtn.disabled = true;
+      showToast('Submitting your vote… sending from Digital@fresh927.com.au');
+
+      // Build share card list
+      const shareList = document.getElementById('shareList');
+      shareList.innerHTML = '';
+      const picksArr = Array.from(selected.values())
+        .map(s => `${s.title} — ${s.artist}`);
+      picksArr.forEach(text => {
+        const li = document.createElement('li');
+        li.textContent = text;
+        shareList.appendChild(li);
+      });
+
+      // Render share image
+      const card = document.getElementById('shareCard');
+      let dataURL = '';
+      try{
+        card.style.display = 'flex';
+        const canvas = await html2canvas(card, {
+          backgroundColor:null,
+          scale:1,
+          useCORS:true,
+          allowTaint:true
+        });
+        dataURL = canvas.toDataURL('image/jpeg', 0.92);
+      }catch(err){
+        console.warn('html2canvas failed; continuing without image', err);
+      }finally{
+        card.style.display = 'none';
+      }
+
+      // Send to Power Automate
+      if (POWER_AUTOMATE_URL){
+        try{
+          const payload = {
+            name: nameEl.value.trim(),
+            mobile: mobileEl.value.trim(),
+            email: emailEl.value.trim(),
+            picks_json: picksArr,
+            imageDataUrl: dataURL,
+            ua: navigator.userAgent
+          };
+
+          const goThanks = (() => {
+            let done = false;
+            return () => {
+              if (done) return;
+              done = true;
+              setTimeout(() => {
+                try { window.location.replace(THANK_YOU_URL); }
+                catch { window.location.href = THANK_YOU_URL; }
+              }, 50);
+            };
+          })();
+
+          fetch(POWER_AUTOMATE_URL, {
+            method:'POST',
+            headers:{ 'Content-Type':'application/json' },
+            body:JSON.stringify(payload)
+          })
+          .catch(err => {
+            console.error('[Top92] POST error:', err);
+          })
+          .finally(() => {
+            goThanks();
+          });
+
+          // Failsafe in case browser suspends the promise
+          setTimeout(goThanks, 1500);
+
+        }catch(err){
+          hideToast();
+          submitBtn.textContent = oldBtnText;
+          submitBtn.style.opacity = '1';
+          submitBtn.disabled = false;
+          console.error(err);
+          statusEl.textContent =
+            'We saved your vote, but emailing the image failed. A preview will open — save it manually.';
+          const win = window.open();
+          if (win){
+            const img = new Image();
+            img.src = dataURL;
+            win.document.body.style.margin = '0';
+            win.document.body.appendChild(img);
+          }
+        }
+      } else {
+        // Fallback if no endpoint configured
+        showToast('Submitting your vote…');
+        statusEl.textContent =
+          'Almost there! We could not send the email because the endpoint is not set. A preview will open — save it.';
+        const win = window.open();
+        if (win){
+          const img = new Image();
+          img.src = dataURL;
+          win.document.body.style.margin = '0';
+          win.document.body.appendChild(img);
+        }
+        window.location.replace(THANK_YOU_URL);
+      }
+
+      // Failsafe: reset button if nav doesn’t fire
+      setTimeout(() => {
+        submitBtn.textContent = oldBtnText;
+        submitBtn.style.opacity = '1';
+        submitBtn.disabled = false;
+        hideToast();
+      }, 6000);
+    }
+
+    // Init
+    buildAZ();
+    renderList();
+    updateSelectedUI();
+  </script>
+
+  <!-- Submitting toast -->
+  <div id="toast" role="status" aria-live="polite" aria-atomic="true">
+    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    <span id="toastText">Submitting…</span>
+  </div>
+</body>
+</html>

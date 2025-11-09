@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Thank You — Fresh 92.7 Top 92 of 2025</title>
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Exo+2:wght@300;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0b12;
+      --text:#ffffff;
+      --muted:#c5c9d8;
+      --panel-bg:rgba(16,18,28,.82);
+      --panel-border:rgba(255,255,255,.12);
+      /* same sunset palette as voting page */
+      --sunset-1:#ff9a3c;
+      --sunset-2:#ffb56b;
+      --sunset-3:#7fd6ff;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+
+    body{
+      margin:0;
+      font-family:'Exo 2',system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      color:var(--text);
+      background-color:var(--bg);
+      min-height:100vh;
+      overflow-x:hidden;
+      position:relative;
+    }
+
+    /* MATCH voting page background */
+    body::before{
+      content:'';
+      position:fixed;
+      inset:0;
+      background:
+        linear-gradient(180deg, rgba(5,8,15,.70), rgba(5,8,15,.45)),
+        url('https://www.journee-mondiale.com/en/wp-content/uploads/2024/11/msg_01R4J6e5BTseBK6PNsLBfEKC.webp')
+          center / cover no-repeat;
+      transform:scaleX(-1);
+      z-index:-1;
+      pointer-events:none;
+    }
+
+    /* DESKTOP LAYOUT:
+       same 2-col grid as voting page:
+       - left: logo column (26vw)
+       - right: content column
+    */
+    body{
+      display:grid;
+      grid-template-columns:minmax(260px,26vw) minmax(0,1fr);
+      gap:32px;
+      align-items:start;
+      align-content:start;
+      grid-auto-rows:min-content;
+    }
+
+    /* MATCH overlay-logo from voting page */
+    .overlay-logo{
+      grid-column:1;
+      position:sticky;
+      top:4vh;
+      padding:12px 0 0;
+      height:auto;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-start;
+      align-items:flex-start;
+      padding-left:24px;
+      z-index:3;
+    }
+    .overlay-logo img{
+      width:min(31vw,390px);
+      height:auto;
+      filter:drop-shadow(0 8px 18px rgba(0,0,0,.45));
+    }
+
+    /* Right column wrapper */
+    main.wrap{
+      grid-column:2;
+      max-width:960px;
+      margin:36px 4vw 28px 0;
+      padding:0 16px 32px;
+      display:flex;
+      align-items:center;       /* vertical centering */
+      justify-content:flex-start;
+      min-height:calc(100vh - 72px);
+    }
+
+    .thank-card{
+      width:100%;
+      background:var(--panel-bg);
+      border:1px solid var(--panel-border);
+      border-radius:24px;
+      padding:26px 32px 24px;
+      box-shadow:0 22px 48px rgba(0,0,0,.65);
+      backdrop-filter:blur(10px);
+    }
+
+    .thank-card h1{
+      font-family:'Russo One',sans-serif;
+      font-size:clamp(26px,3.2vw,40px);
+      letter-spacing:.5px;
+      margin:0 0 14px;
+    }
+
+    .thank-card p{
+      margin:0 0 6px;
+      font-size:16px;
+      color:var(--muted);
+    }
+
+    .thank-card p:last-of-type{
+      margin-bottom:18px;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:11px 24px;
+      border-radius:14px;
+      border:0;
+      font-weight:800;
+      font-family:'Exo 2',sans-serif;
+      letter-spacing:.25px;
+      text-decoration:none;
+      color:#140b08;
+      background:linear-gradient(135deg,var(--sunset-1),var(--sunset-2) 55%,var(--sunset-3));
+      box-shadow:0 8px 22px rgba(0,0,0,.38);
+      cursor:pointer;
+    }
+
+    .btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 12px 26px rgba(0,0,0,.5);
+    }
+
+    .btn:active{
+      transform:translateY(1px);
+      box-shadow:0 4px 14px rgba(0,0,0,.35);
+    }
+
+    /* MOBILE / TABLET */
+    @media (max-width:900px){
+      body{
+        display:block;
+      }
+
+      .overlay-logo{
+        position:relative;
+        padding-left:16px;
+        padding-top:16px;
+      }
+
+      .overlay-logo img{
+        width:min(52vw,260px);
+      }
+
+      main.wrap{
+        margin:12px auto 32px;
+        padding:0 16px;
+        min-height:0;
+        display:flex;
+        align-items:flex-start;
+        justify-content:center;
+      }
+
+      .thank-card{
+        margin-top:16px;
+        padding:22px 18px 20px;
+        border-radius:18px;
+      }
+    }
+
+    @media (max-width:600px){
+      .overlay-logo{
+        padding-left:12px;
+      }
+      .overlay-logo img{
+        width:46vw;
+      }
+      .thank-card h1{
+        font-size:22px;
+      }
+      .thank-card p{
+        font-size:14px;
+      }
+    }
+
+    .fresh-logo {
+        position: absolute;
+        left: 32%;
+        top: 17px;
+        width: 250px;
+        max-width: 50%;
+        height: auto;
+        z-index: 4;
+        pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Same logo + position as main page -->
+  <div class="overlay-logo">
+    <!-- Use the same logo file used on index3... -->
+    <img src="Spotify Cover.png" alt="Top 92 2025">
+    <img src="Blue Fresh Transparent.png" alt="Fresh 92.7" class="fresh-logo">
+  </div>
+
+  <main class="wrap">
+    <div class="thank-card">
+      <h1>Thank you for voting in Fresh 92.7's Top 92 of 2025!</h1>
+      <p>Your votes have been sent to your email for you to share.</p>
+      <p>See you at the Pier Glenelg on January 17!</p>
+      <a href="index.html" class="btn">
+        Back to voting
+      </a>
+    </div>
+  </main>
+</body>
+</html>
