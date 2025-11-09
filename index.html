@@ -630,30 +630,15 @@
 
   <main class="wrap">
     <div class="box az-wrap">
-      <div class="az-top">
-        <div class="az-left">
-          <div class="controls">
-            <input id="search" type="text" placeholder="Search by song or artist…">
-            <select id="viewBy">
-              <option value="title">Browse by Title (A–Z)</option>
-              <option value="artist">Browse by Artist (A–Z)</option>
-            </select>
-            <span id="status"></span>
-          </div>
-          <div id="az" class="az"></div>
-        </div>
-        <div class="az-form">
-          <div class="az-form-grid">
-            <input id="name" type="text" placeholder="Full name" required>
-            <input id="mobile" type="tel" placeholder="Mobile" required>
-            <input id="email" type="email" placeholder="Email" required>
-            <button id="submitBtn" class="btn" disabled>Submit my 10 votes</button>
-          </div>
-          <label class="small az-note">
-            We’ll email your share image and securely store your votes for tallying.
-          </label>
-        </div>
+      <div class="controls">
+        <input id="search" type="text" placeholder="Search by song or artist…">
+        <select id="viewBy">
+          <option value="title">Browse by Title (A–Z)</option>
+          <option value="artist">Browse by Artist (A–Z)</option>
+        </select>
+        <span id="status"></span>
       </div>
+      <div id="az" class="az"></div>
     </div>
 
     <div class="layout">
@@ -673,6 +658,20 @@
     </div>
     <footer></footer>
   </main>
+
+  <section class="wrap">
+    <div class="box">
+      <div class="controls" style="gap:8px">
+        <input id="name" type="text" placeholder="Full name" required>
+        <input id="mobile" type="tel" placeholder="Mobile" required>
+        <input id="email" type="email" placeholder="Email" required>
+        <button id="submitBtn" class="btn" disabled>Submit my 10 votes</button>
+      </div>
+      <label class="small">
+        We’ll email your share image and securely store your votes for tallying.
+      </label>
+    </div>
+  </section>
 
   <!-- Hidden share card for html2canvas capture -->
   <div id="shareCard">
