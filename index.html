@@ -427,24 +427,27 @@
       footer{margin:14px 0}
       #playerWrap{
         position:fixed;
-        left:12px;
-        right:12px;
-        bottom:16px;
-        top:auto;
-        max-width:none;
-        width:auto;
-        padding:10px;
-        border-radius:14px;
-        display:none;
+        left:0;
+        right:0;
+        top:72px; /* sits below logos / above form area */
+        margin:0 auto;
+        max-width:100%;
+        width:100%;
+        padding:8px 14px;
+        border-radius:0 0 16px 16px;
+        display:none; /* shown when a preview is opened */
         min-height:auto;
-        box-shadow:0 6px 16px rgba(0,0,0,.45);
-        z-index:9;
+        box-shadow:0 6px 18px rgba(0,0,0,.4);
+        z-index:999; /* above content but below system UI */
+        background:#0b0e18;
+        border:1px solid #242842;
+        box-sizing:border-box;
       }
       #playerHead{
         margin-bottom:4px;
       }
       #playerWrap strong{
-        font-size:14px;
+        font-size:15px;
       }
       #playerWrap .player-controls iframe{
         height:72px;
