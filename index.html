@@ -446,11 +446,19 @@
         height:72px;
       }
       .az-top{
-        grid-template-columns:1fr;
-        gap:12px;
+        display:flex;
+        flex-direction:column;
+        gap:10px;
+      }
+      .az-form{
+        order:1; /* show form first on mobile */
+      }
+      .az-left{
+        order:2; /* search + A–Z below the form on mobile */
       }
       .az-form-grid{
         grid-template-columns:1fr;
+        gap:8px;
       }
       .az-note{
         margin-top:2px;
