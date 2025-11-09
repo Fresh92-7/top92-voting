@@ -1019,14 +1019,13 @@
       playerArtistEl.textContent = 'Preview will play below.';
     });
 
-    let spotifyLoadHandler = null;
+    let mediaLoadHandler = null;
 
     function openPreview(song){
       if (!song) return;
 
       let src = '';
       let height = 152;
-      let isSpotify = false;
 
       // Reset classes for provider-specific styling
       playerWrap.classList.remove('spotify','youtube','soundcloud');
@@ -1046,7 +1045,6 @@
           + '?utm_source=generator&theme=0&autoplay=1';
         height = 152;
         playerWrap.classList.add('spotify');
-        isSpotify = true;
       }
       // YouTube
       else if (song.youtube){
@@ -1074,26 +1072,41 @@
       player.setAttribute('allowfullscreen','');
       player.style.height = height + 'px';
 
-      // Clean up any previous Spotify load handler so we don't stack them
-      if (spotifyLoadHandler){
-        player.removeEventListener('load', spotifyLoadHandler);
-        spotifyLoadHandler = null;
+      // Clean up any previous load handler so we don't stack them
+      if (mediaLoadHandler){
+        player.removeEventListener('load', mediaLoadHandler);
+        mediaLoadHandler = null;
       }
 
-      // Gentle, single-shot autoplay nudge for Spotify on FIRST and subsequent loads
-      if (isSpotify){
-        spotifyLoadHandler = () => {
-          player.removeEventListener('load', spotifyLoadHandler);
-          spotifyLoadHandler = null;
-          setTimeout(() => {
-            try { player.contentWindow.postMessage({ command:'play' }, '*'); } catch(e){}
-            try { player.contentWindow.postMessage(JSON.stringify({ command:'play' }), '*'); } catch(e){}
-          }, 250);
-        };
-        player.addEventListener('load', spotifyLoadHandler);
-      }
+      // Attach a single-shot load handler to gently request autoplay
+      mediaLoadHandler = () => {
+        player.removeEventListener('load', mediaLoadHandler);
+        mediaLoadHandler = null;
+        setTimeout(() => {
+          try {
+            // Spotify embed
+            player.contentWindow.postMessage({ command: 'play' }, '*');
+          } catch(e){}
+          try {
+            player.contentWindow.postMessage(JSON.stringify({ command: 'play' }), '*');
+          } catch(e){}
+          try {
+            // YouTube iframe API style
+            player.contentWindow.postMessage(JSON.stringify({
+              event: 'command',
+              func: 'playVideo',
+              args: []
+            }), '*');
+          } catch(e){}
+          try {
+            // SoundCloud widget API style
+            player.contentWindow.postMessage(JSON.stringify({ method: 'play' }), '*');
+          } catch(e){}
+        }, 220);
+      };
+      player.addEventListener('load', mediaLoadHandler);
 
-      // Set source AFTER listeners are attached so first click is caught
+      // Set source AFTER listeners are attached so the very first click is captured
       player.src = src;
 
       // Show the player (desktop and mobile share the same behavior)
