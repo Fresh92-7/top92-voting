@@ -729,7 +729,7 @@
     </div>
     <div class="player-controls">
       <iframe id="mediaPlayer"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         referrerpolicy="strict-origin-when-cross-origin">
       </iframe>
     </div>
@@ -1019,18 +1019,17 @@
       playerArtistEl.textContent = 'Preview will play below.';
     });
 
-    let mediaLoadHandler = null;
-
     function openPreview(song){
       if (!song) return;
 
       let src = '';
       let height = 152;
+      let isSpotify = false;
 
       // Reset provider-specific classes
       playerWrap.classList.remove('spotify', 'youtube', 'soundcloud');
 
-      // Update labels (keeps semantics tidy)
+      // Update labels (harmless on mobile/desktop)
       if (playerTitleEl) playerTitleEl.textContent = song.title || 'Preview';
       if (playerArtistEl) playerArtistEl.textContent = song.artist || '';
 
@@ -1042,9 +1041,10 @@
         }
         src = url
           .replace('open.spotify.com/track', 'open.spotify.com/embed/track')
-          + '?utm_source=generator&amp;theme=0&amp;autoplay=1';
+          + '?utm_source=generator&theme=0&autoplay=1';
         height = 152;
         playerWrap.classList.add('spotify');
+        isSpotify = true;
       }
       // YouTube
       else if (song.youtube){
@@ -1054,7 +1054,7 @@
         const idMatch = yt.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{6,})/);
         const id = idMatch ? idMatch[1] : '';
         if (id){
-          src = `https://www.youtube.com/embed/${id}?autoplay=1&amp;rel=0&amp;playsinline=1`;
+          src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
           height = 180;
           playerWrap.classList.add('youtube');
         }
@@ -1062,7 +1062,7 @@
       // SoundCloud
       else if (song.soundcloud){
         const sc = encodeURIComponent(song.soundcloud.trim());
-        src = `https://w.soundcloud.com/player/?url=${sc}&amp;auto_play=true&amp;hide_related=true&amp;show_comments=false&amp;visual=false`;
+        src = `https://w.soundcloud.com/player/?url=${sc}&auto_play=true&hide_related=true&show_comments=false&visual=false`;
         height = 180;
         playerWrap.classList.add('soundcloud');
       }
@@ -1072,53 +1072,32 @@
       player.setAttribute('allowfullscreen', '');
       player.style.height = height + 'px';
 
-      // Clear any previous load handler so they don't stack
-      if (mediaLoadHandler){
-        player.removeEventListener('load', mediaLoadHandler);
-        mediaLoadHandler = null;
+      // Clear any previous autoplay handler so we don't stack listeners
+      if (player._autoplayHandler){
+        player.removeEventListener('load', player._autoplayHandler);
+        player._autoplayHandler = null;
       }
 
-      // Attach a one-shot load handler BEFORE setting src.
-      // This runs after the embed has fully loaded and asks it to play.
-      mediaLoadHandler = () => {
-        player.removeEventListener('load', mediaLoadHandler);
-        mediaLoadHandler = null;
+      // Spotify autoplay: buffered attempts after load so FIRST click works reliably
+      if (isSpotify){
+        const tryPlay = () => {
+          try { player.contentWindow.postMessage({ command: 'play' }, '*'); } catch(e){}
+          try { player.contentWindow.postMessage(JSON.stringify({ command: 'play' }), '*'); } catch(e){}
+        };
+        const onLoad = () => {
+          // a few spaced attempts; avoids glitchy restart while handling slow loads
+          setTimeout(tryPlay, 150);
+          setTimeout(tryPlay, 450);
+          setTimeout(tryPlay, 900);
+        };
+        player._autoplayHandler = onLoad;
+        player.addEventListener('load', onLoad);
+      }
 
-        // small delay to let provider scripts initialise
-        setTimeout(() => {
-          try {
-            // Spotify: custom message format
-            player.contentWindow.postMessage({ command: 'play' }, '*');
-          } catch (e) {}
-
-          try {
-            // Spotify (stringified)
-            player.contentWindow.postMessage(JSON.stringify({ command: 'play' }), '*');
-          } catch (e) {}
-
-          try {
-            // YouTube iframe API style
-            player.contentWindow.postMessage(JSON.stringify({
-              event: 'command',
-              func: 'playVideo',
-              args: []
-            }), '*');
-          } catch (e) {}
-
-          try {
-            // SoundCloud widget API style
-            player.contentWindow.postMessage(JSON.stringify({ method: 'play' }), '*');
-          } catch (e) {}
-        }, 200);
-      };
-
-      player.addEventListener('load', mediaLoadHandler);
-
-      // Setting src is tied directly to the user's click on "Preview"
-      // so browsers should treat autoplay as user-initiated on both desktop and mobile.
+      // Set src AFTER attaching the load listener so the first preview also autoplays
       player.src = src;
 
-      // Show the player
+      // Show the player (desktop: bottom-left; mobile: pinned top, via CSS)
       playerWrap.style.display = 'flex';
     }
 
