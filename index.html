@@ -1043,7 +1043,7 @@
         }
         src = url
           .replace('open.spotify.com/track','open.spotify.com/embed/track')
-          + '?utm_source=generator&amp;theme=0&amp;autoplay=1';
+          + '?utm_source=generator&theme=0&autoplay=1';
         height = 152;
         playerWrap.classList.add('spotify');
         isSpotify = true;
@@ -1056,7 +1056,7 @@
         const idMatch = yt.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{6,})/);
         const id = idMatch ? idMatch[1] : '';
         if (id){
-          src = `https://www.youtube.com/embed/${id}?autoplay=1&amp;rel=0`;
+          src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
           height = 180;
           playerWrap.classList.add('youtube');
         }
@@ -1064,7 +1064,7 @@
       // SoundCloud
       else if (song.soundcloud){
         const sc = encodeURIComponent(song.soundcloud.trim());
-        src = `https://w.soundcloud.com/player/?url=${sc}&amp;auto_play=true&amp;hide_related=true&amp;show_comments=false&amp;visual=false`;
+        src = `https://w.soundcloud.com/player/?url=${sc}&auto_play=true&hide_related=true&show_comments=false&visual=false`;
         height = 180;
         playerWrap.classList.add('soundcloud');
       }
