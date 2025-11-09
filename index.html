@@ -426,19 +426,20 @@
       }
       footer{margin:14px 0}
       #playerWrap{
-        position:fixed;
-        left:12px;
-        right:12px;
-        bottom:16px;
+        position:static;
+        left:auto;
+        right:auto;
+        bottom:auto;
         top:auto;
-        max-width:none;
-        width:auto;
-        padding:10px;
+        max-width:100%;
+        width:100%;
+        padding:8px 10px;
+        margin-top:8px;
         border-radius:14px;
-        display:none;
+        display:none; /* shown when Preview clicked */
         min-height:auto;
         box-shadow:0 6px 16px rgba(0,0,0,.45);
-        z-index:9;
+        z-index:1;
       }
       #playerHead{
         margin-bottom:4px;
@@ -447,7 +448,7 @@
         font-size:14px;
       }
       #playerWrap .player-controls iframe{
-        height:72px;
+        height:80px;
       }
       .az-top{
         display:flex;
@@ -755,6 +756,14 @@
     const nameEl    = document.getElementById('name');
     const mobileEl  = document.getElementById('mobile');
     const emailEl   = document.getElementById('email');
+
+    // On mobile, dock the preview player under the A–Z buttons
+    if (window.matchMedia('(max-width: 600px)').matches) {
+      const azLeft = document.querySelector('.az-left');
+      if (azLeft && playerWrap && !azLeft.contains(playerWrap)) {
+        azLeft.appendChild(playerWrap);
+      }
+    }
 
     // Build A–Z filter
     function buildAZ(){
