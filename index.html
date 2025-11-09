@@ -426,20 +426,19 @@
       }
       footer{margin:14px 0}
       #playerWrap{
-        position:static;
-        left:auto;
-        right:auto;
-        bottom:auto;
+        position:fixed;
+        left:12px;
+        right:12px;
+        bottom:16px;
         top:auto;
         max-width:none;
-        width:100%;
+        width:auto;
         padding:10px;
-        margin-top:8px;
         border-radius:14px;
-        display:none; /* stays hidden until a Preview is tapped */
+        display:none;
         min-height:auto;
-        box-shadow:0 4px 10px rgba(0,0,0,.35);
-        z-index:auto;
+        box-shadow:0 6px 16px rgba(0,0,0,.45);
+        z-index:9;
       }
       #playerHead{
         margin-bottom:4px;
@@ -455,11 +454,11 @@
         flex-direction:column;
         gap:10px;
       }
-      .az-left{
-        order:2;
-      }
       .az-form{
-        order:1;
+        order:1; /* show form first on mobile */
+      }
+      .az-left{
+        order:2; /* search + A–Z below the form on mobile */
       }
       .az-form-grid{
         grid-template-columns:1fr;
@@ -1200,14 +1199,6 @@
     }
 
     // Init
-    // On small screens, place the preview player inline under the A–Z buttons
-    if (window.innerWidth <= 600) {
-      const azLeft = document.querySelector('.az-left');
-      const playerWrapEl = document.getElementById('playerWrap');
-      if (azLeft && playerWrapEl) {
-        azLeft.appendChild(playerWrapEl);
-      }
-    }
     buildAZ();
     renderList();
     updateSelectedUI();
