@@ -1019,6 +1019,8 @@
       playerArtistEl.textContent = 'Preview will play below.';
     });
 
+    let spotifyLoadHandler = null;
+
     function openPreview(song){
       if (!song) return;
 
@@ -1026,8 +1028,10 @@
       let height = 152;
       let isSpotify = false;
 
+      // Reset classes for provider-specific styling
       playerWrap.classList.remove('spotify','youtube','soundcloud');
 
+      // Update labels (even though hidden visually, keeps semantics tidy)
       playerTitleEl.textContent = song.title;
       playerArtistEl.textContent = song.artist;
 
@@ -1039,7 +1043,7 @@
         }
         src = url
           .replace('open.spotify.com/track','open.spotify.com/embed/track')
-          + '?utm_source=generator&theme=0&autoplay=1';
+          + '?utm_source=generator&amp;theme=0&amp;autoplay=1';
         height = 152;
         playerWrap.classList.add('spotify');
         isSpotify = true;
@@ -1052,7 +1056,7 @@
         const idMatch = yt.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{6,})/);
         const id = idMatch ? idMatch[1] : '';
         if (id){
-          src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+          src = `https://www.youtube.com/embed/${id}?autoplay=1&amp;rel=0`;
           height = 180;
           playerWrap.classList.add('youtube');
         }
@@ -1060,7 +1064,7 @@
       // SoundCloud
       else if (song.soundcloud){
         const sc = encodeURIComponent(song.soundcloud.trim());
-        src = `https://w.soundcloud.com/player/?url=${sc}&auto_play=true&hide_related=true&show_comments=false&visual=false`;
+        src = `https://w.soundcloud.com/player/?url=${sc}&amp;auto_play=true&amp;hide_related=true&amp;show_comments=false&amp;visual=false`;
         height = 180;
         playerWrap.classList.add('soundcloud');
       }
@@ -1070,20 +1074,29 @@
       player.setAttribute('allowfullscreen','');
       player.style.height = height + 'px';
 
-      // Autoplay nudge for Spotify (smooth, incl. first click)
-      if (isSpotify){
-        const tryPlay = () => {
-          try { player.contentWindow.postMessage({ command:'play' }, '*'); } catch(e){}
-          try { player.contentWindow.postMessage(JSON.stringify({ command:'play' }), '*'); } catch(e){}
-        };
-        const onLoad = () => {
-          player.removeEventListener('load', onLoad);
-          setTimeout(tryPlay, 200);
-        };
-        player.addEventListener('load', onLoad);
+      // Clean up any previous Spotify load handler so we don't stack them
+      if (spotifyLoadHandler){
+        player.removeEventListener('load', spotifyLoadHandler);
+        spotifyLoadHandler = null;
       }
 
+      // Gentle, single-shot autoplay nudge for Spotify on FIRST and subsequent loads
+      if (isSpotify){
+        spotifyLoadHandler = () => {
+          player.removeEventListener('load', spotifyLoadHandler);
+          spotifyLoadHandler = null;
+          setTimeout(() => {
+            try { player.contentWindow.postMessage({ command:'play' }, '*'); } catch(e){}
+            try { player.contentWindow.postMessage(JSON.stringify({ command:'play' }), '*'); } catch(e){}
+          }, 250);
+        };
+        player.addEventListener('load', spotifyLoadHandler);
+      }
+
+      // Set source AFTER listeners are attached so first click is caught
       player.src = src;
+
+      // Show the player (desktop and mobile share the same behavior)
       playerWrap.style.display = 'flex';
     }
 
