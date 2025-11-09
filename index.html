@@ -370,8 +370,21 @@
     /* Mobile optimisations */
     @media (max-width:600px){
       .wrap{padding:12px}
-      .overlay-logo{padding:12px 0 0}
-      .overlay-logo img{width:min(78vw,360px)}
+      .overlay-logo{
+        padding:16px 0 4px;
+        align-items:center;
+      }
+      .overlay-logo .fresh-logo{
+        position:static;
+        transform:none;
+        width:46vw;
+        max-width:220px;
+        margin:0 auto 4px;
+      }
+      .overlay-logo img:not(.fresh-logo){
+        width:58vw;
+        max-width:280px;
+      }
       .az-wrap .controls{
         display:grid;
         grid-template-columns:1fr;
@@ -409,11 +422,28 @@
       }
       footer{margin:14px 0}
       #playerWrap{
-        left:12px;
-        right:12px;
-        bottom:12px;
+        position:fixed;
+        left:0;
+        right:0;
+        top:0;
+        bottom:auto;
         max-width:none;
-        width:auto;
+        width:100%;
+        padding:8px 10px;
+        border-radius:0 0 14px 14px;
+        display:none;
+        min-height:auto;
+        box-shadow:0 6px 16px rgba(0,0,0,.45);
+        z-index:5;
+      }
+      #playerHead{
+        margin-bottom:4px;
+      }
+      #playerWrap strong{
+        font-size:14px;
+      }
+      #playerWrap .player-controls iframe{
+        height:72px;
       }
       .az-top{
         grid-template-columns:1fr;
