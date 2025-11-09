@@ -321,16 +321,17 @@
       height:auto;
       filter:drop-shadow(0 8px 18px rgba(0,0,0,.45));
     }
+
     .overlay-logo .fresh-logo {
-        position: absolute;
-        left: 57%;
-        top: 17px; 
-        transform: translateX(-50%);
-        width: 220px;
-        max-width: 50%;
-        height: auto;
-        z-index: 7; /* above the main logo */
-        pointer-events: none;
+      position: absolute;
+      left: 57%;
+      top: 17px;
+      transform: translateX(-50%);
+      width: 220px;
+      max-width: 50%;
+      height: auto;
+      z-index: 7;
+      pointer-events: none;
     }
 
     /* Desktop: logo left, interface right */
@@ -387,15 +388,15 @@
         width:min(60vw,260px);
         max-width:260px;
       }
-      .az-wrap {
-        padding-left: 0;
-        padding-right: 0;
+      .az-wrap{
+        padding-left:0;
+        padding-right:0;
       }
-      .az-top {
-        align-items: stretch;
+      .az-top{
+        align-items:stretch;
       }
-      .az-left {
-        width: 100%;
+      .az-left{
+        width:100%;
       }
       .az-wrap .controls{
         display:grid;
@@ -444,19 +445,19 @@
         position:fixed;
         left:50%;
         transform:translateX(-50%);
-        top:72px; /* sits below logos / above form area */
+        top:72px;
         bottom:auto;
         margin:0 auto;
         max-width:420px;
         width:100%;
         padding:8px 12px 10px;
         border-radius:12px;
-        display:none; /* shown when a preview is opened */
+        display:none;
         flex-direction:column;
         gap:4px;
         min-height:auto;
         box-shadow:0 6px 18px rgba(0,0,0,.4);
-        z-index:999; /* above content but below system UI */
+        z-index:999;
         background:#0b0e18;
         border:1px solid #242842;
         box-sizing:border-box;
@@ -477,10 +478,10 @@
         gap:10px;
       }
       .az-form{
-        order:1; /* show form first on mobile */
+        order:1;
       }
       .az-left{
-        order:2; /* search + A–Z below the form on mobile */
+        order:2;
       }
       .az-form-grid{
         grid-template-columns:1fr;
@@ -534,7 +535,7 @@
       40%{transform:scale(1);opacity:1}
     }
 
-    /* Share card (for html2canvas capture only) */
+    /* Share card */
     #shareCard{
       width:1080px;
       height:1920px;
@@ -578,26 +579,26 @@
       color:var(--muted);
     }
 
-    /* Preview player */
+    /* Preview player desktop */
     @media (min-width:601px){
-    #playerWrap{
-      position:fixed;
-      left:16px;
-      bottom:16px;
-      background:#0f0f18;
-      border:1px solid #242842;
-      border-radius:18px;
-      padding:18px;
-      display:none;
-      flex-direction:column;
-      z-index:2;
-      box-shadow:0 18px 36px rgba(0,0,0,.32);
-      max-width:340px;
-      width:min(340px,40vw);
-      box-sizing:border-box;
-      min-height:180px;
-      overflow:hidden;
-    }
+      #playerWrap{
+        position:fixed;
+        left:16px;
+        bottom:16px;
+        background:#0f0f18;
+        border:1px solid #242842;
+        border-radius:18px;
+        padding:18px;
+        display:none;
+        flex-direction:column;
+        z-index:2;
+        box-shadow:0 18px 36px rgba(0,0,0,.32);
+        max-width:340px;
+        width:min(340px,40vw);
+        box-sizing:border-box;
+        min-height:180px;
+        overflow:hidden;
+      }
     }
 
     @media (min-width:1024px){
@@ -631,7 +632,7 @@
     }
 
     #playerWrap .player-body{
-      display:none; /* we’re using a clean embed-only layout */
+      display:none;
     }
 
     #playerWrap .player-controls{
@@ -654,7 +655,6 @@
     }
   </style>
 
-  <!-- External libs for share image + songs data -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="songs-2025.js"></script>
 </head>
@@ -710,12 +710,10 @@
     <footer></footer>
   </main>
 
-  <!-- Hidden share card for html2canvas capture -->
   <div id="shareCard">
     <ol id="shareList" aria-label="Your Top 10 picks"></ol>
   </div>
 
-  <!-- Reusable media player -->
   <div id="playerWrap">
     <div id="playerHead">
       <strong>Preview</strong>
@@ -736,11 +734,9 @@
   </div>
 
   <script>
-    // Submission config (Power Automate)
-    const THANK_YOU_URL = 'thank-you.html'; // ensure this file exists / matches your thank you page name
+    const THANK_YOU_URL = 'thank-you.html';
     const POWER_AUTOMATE_URL = "https://defaultbfa2e364c3c248798e918c7601a4d4.38.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f892cde2433e4ec08a61b5635447974e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-xW5gKIOk_fB-RxCccg-n24LpMuvrWkQCRGVleIA_bk";
 
-    // Toast helpers
     const toastEl = document.createElement('div');
     function showToast(msg){
       const t = document.getElementById('toast') || toastEl;
@@ -758,16 +754,13 @@
       setTimeout(()=>{ t.style.display='none'; }, 150);
     }
 
-    // Data
     let songs = (window.SONGS_2025 || []).slice();
 
-    // State
     const selected = new Map();
     let currentLetter = 'All';
     let viewBy = 'title';
     let query = '';
 
-    // Elements
     const listEl    = document.getElementById('list');
     const selEl     = document.getElementById('selected');
     const countEl   = document.getElementById('count');
@@ -780,7 +773,6 @@
     const mobileEl  = document.getElementById('mobile');
     const emailEl   = document.getElementById('email');
 
-    // Build A–Z filter
     function buildAZ(){
       azEl.innerHTML = '';
       const letters = new Set(
@@ -831,7 +823,6 @@
       activeBtn.classList.add('active');
     }
 
-    // Render song list
     function renderList(){
       listEl.innerHTML = '';
 
@@ -989,7 +980,6 @@
       }
     }
 
-    // Search + viewBy
     searchEl.addEventListener('input', e => {
       query = e.target.value;
       currentLetter = 'All';
@@ -1004,7 +994,6 @@
       renderList();
     });
 
-    // Preview player
     const playerWrap      = document.getElementById('playerWrap');
     const player          = document.getElementById('mediaPlayer');
     const playerTitleEl   = document.getElementById('playerTitle');
@@ -1015,8 +1004,8 @@
       playerWrap.style.display = 'none';
       playerWrap.classList.remove('spotify','youtube','soundcloud');
       player.src = '';
-      playerTitleEl.textContent = 'Choose a track to preview';
-      playerArtistEl.textContent = 'Preview will play below.';
+      if (playerTitleEl) playerTitleEl.textContent = 'Choose a track to preview';
+      if (playerArtistEl) playerArtistEl.textContent = 'Preview will play below.';
     });
 
     function openPreview(song){
@@ -1025,17 +1014,12 @@
       let src = '';
       let height = 152;
       let isSpotify = false;
-      let isYouTube = false;
-      let isSoundCloud = false;
 
-      // Reset provider-specific classes
       playerWrap.classList.remove('spotify', 'youtube', 'soundcloud');
 
-      // Update labels
       if (playerTitleEl) playerTitleEl.textContent = song.title || 'Preview';
       if (playerArtistEl) playerArtistEl.textContent = song.artist || '';
 
-      // Build provider src
       if (song.spotify){
         let url = song.spotify;
         if (!url.startsWith('http')){
@@ -1047,7 +1031,8 @@
         height = 152;
         playerWrap.classList.add('spotify');
         isSpotify = true;
-      } else if (song.youtube){
+      }
+      else if (song.youtube){
         let yt = String(song.youtube).trim();
         const srcAttr = yt.match(/src\s*=\s*"([^"]+)"/i);
         if (srcAttr) yt = srcAttr[1];
@@ -1057,14 +1042,13 @@
           src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
           height = 180;
           playerWrap.classList.add('youtube');
-          isYouTube = true;
         }
-      } else if (song.soundcloud){
+      }
+      else if (song.soundcloud){
         const sc = encodeURIComponent(song.soundcloud.trim());
         src = `https://w.soundcloud.com/player/?url=${sc}&auto_play=true&hide_related=true&show_comments=false&visual=false`;
         height = 180;
         playerWrap.classList.add('soundcloud');
-        isSoundCloud = true;
       }
 
       if (!src) return;
@@ -1072,24 +1056,17 @@
       player.setAttribute('allowfullscreen', '');
       player.style.height = height + 'px';
 
-      // Clear previous autoplay handler if any
       if (player._autoplayHandler){
         player.removeEventListener('load', player._autoplayHandler);
         player._autoplayHandler = null;
       }
 
-      const isMobile = /Mobi|Android/i.test(navigator.userAgent || '');
-
-      // Define a reusable play attempt
-      const tryPlay = () => {
-        try { player.contentWindow.postMessage({ command: 'play' }, '*'); } catch(e){}
-        try { player.contentWindow.postMessage(JSON.stringify({ command: 'play' }), '*'); } catch(e){}
-      };
-
-      // For Spotify: buffered attempts after load (desktop + mobile)
       if (isSpotify){
+        const tryPlay = () => {
+          try { player.contentWindow.postMessage({ command: 'play' }, '*'); } catch(e){}
+          try { player.contentWindow.postMessage(JSON.stringify({ command: 'play' }), '*'); } catch(e){}
+        };
         const onLoad = () => {
-          // a few spaced attempts to handle slow embed load without rapid restart glitch
           setTimeout(tryPlay, 150);
           setTimeout(tryPlay, 450);
           setTimeout(tryPlay, 900);
@@ -1098,20 +1075,10 @@
         player.addEventListener('load', onLoad);
       }
 
-      // Set src AFTER attaching the load listener
       player.src = src;
-
-      // Immediate attempt inside the same click event:
-      // This maximizes the chance that mobile browsers treat it as user-gesture driven.
-      if (isSpotify || isYouTube || isSoundCloud){
-        tryPlay();
-      }
-
-      // Show the player (desktop + mobile use different CSS, same JS)
       playerWrap.style.display = 'flex';
     }
 
-    // Form validation
     [nameEl, mobileEl, emailEl].forEach(el =>
       el.addEventListener('input', validateForm)
     );
@@ -1125,7 +1092,6 @@
       submitBtn.disabled = !ok;
     }
 
-    // Submit handler
     submitBtn.addEventListener('click', handleSubmit);
 
     async function handleSubmit(){
@@ -1138,7 +1104,6 @@
       submitBtn.disabled = true;
       showToast('Submitting your vote… sending from Digital@fresh927.com.au');
 
-      // Build share card list
       const shareList = document.getElementById('shareList');
       shareList.innerHTML = '';
       const picksArr = Array.from(selected.values())
@@ -1149,7 +1114,6 @@
         shareList.appendChild(li);
       });
 
-      // Render share image
       const card = document.getElementById('shareCard');
       let dataURL = '';
       try{
@@ -1167,7 +1131,6 @@
         card.style.display = 'none';
       }
 
-      // Send to Power Automate
       if (POWER_AUTOMATE_URL){
         try{
           const payload = {
@@ -1203,7 +1166,6 @@
             goThanks();
           });
 
-          // Failsafe in case browser suspends the promise
           setTimeout(goThanks, 1500);
 
         }catch(err){
@@ -1223,7 +1185,6 @@
           }
         }
       } else {
-        // Fallback if no endpoint configured
         showToast('Submitting your vote…');
         statusEl.textContent =
           'Almost there! We could not send the email because the endpoint is not set. A preview will open — save it.';
@@ -1237,7 +1198,6 @@
         window.location.replace(THANK_YOU_URL);
       }
 
-      // Failsafe: reset button if nav doesn’t fire
       setTimeout(() => {
         submitBtn.textContent = oldBtnText;
         submitBtn.style.opacity = '1';
@@ -1246,13 +1206,11 @@
       }, 6000);
     }
 
-    // Init
     buildAZ();
     renderList();
     updateSelectedUI();
   </script>
 
-  <!-- Submitting toast -->
   <div id="toast" role="status" aria-live="polite" aria-atomic="true">
     <span class="dot"></span><span class="dot"></span><span class="dot"></span>
     <span id="toastText">Submitting…</span>
