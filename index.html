@@ -541,16 +541,18 @@
       height:1920px;
       background:url('Top 92 My 10 Favourites.jpeg') center/cover no-repeat;
       color:#fff;
-      padding:400px 160px 260px;
       position:absolute;
-      display:none;
-      flex-direction:column;
-      justify-content:center;
-      align-items:center;
-      text-align:center;
-      gap:24px;
       left:0;
       top:0;
+      display:none;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      text-align:center;
+      gap:24px;
+      /* Keep all copy safely between the two red bars */
+      padding:440px 160px 320px;
+      box-sizing:border-box;
     }
 
     #shareCard ol{
@@ -558,20 +560,32 @@
       margin:0;
       padding:0;
       width:100%;
-      max-width:720px;
-      font-size:42px;
-      line-height:1.38;
-      font-weight:600;
-      letter-spacing:.2px;
-      text-shadow:0 4px 14px rgba(0,0,0,.55);
+      max-width:760px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:18px;
     }
 
     #shareCard ol li{
-      margin:0 0 28px;
+      margin:0;
     }
 
-    #shareCard ol li:last-child{
-      margin-bottom:0;
+    #shareCard .share-song{
+      font-family:'Russo One','Exo 2',system-ui,sans-serif;
+      font-weight:700;
+      font-size:clamp(34px, 3.8vw, 42px);
+      line-height:1.18;
+      text-shadow:0 4px 14px rgba(0,0,0,.55);
+    }
+
+    #shareCard .share-artist{
+      font-family:'Exo 2',system-ui,sans-serif;
+      font-weight:400;
+      font-size:clamp(22px, 2.6vw, 30px);
+      line-height:1.18;
+      margin-top:4px;
+      text-shadow:0 4px 14px rgba(0,0,0,.55);
     }
 
     #status{
@@ -1106,11 +1120,25 @@
 
       const shareList = document.getElementById('shareList');
       shareList.innerHTML = '';
-      const picksArr = Array.from(selected.values())
-        .map(s => `${s.title} — ${s.artist}`);
-      picksArr.forEach(text => {
+
+      const picksArr = Array.from(selected.values());
+
+      picksArr.forEach(song => {
         const li = document.createElement('li');
-        li.textContent = text;
+
+        const titleEl = document.createElement('div');
+        titleEl.className = 'share-song';
+        titleEl.textContent = song.title || '';
+
+        const artistEl = document.createElement('div');
+        artistEl.className = 'share-artist';
+        artistEl.textContent = song.artist || '';
+
+        li.appendChild(titleEl);
+        if (artistEl.textContent){
+          li.appendChild(artistEl);
+        }
+
         shareList.appendChild(li);
       });
 
@@ -1131,13 +1159,16 @@
         card.style.display = 'none';
       }
 
+      // To keep picks_json as before (array of "title — artist" strings)
+      const picks_json = picksArr.map(s => `${s.title} — ${s.artist}`);
+
       if (POWER_AUTOMATE_URL){
         try{
           const payload = {
             name: nameEl.value.trim(),
             mobile: mobileEl.value.trim(),
             email: emailEl.value.trim(),
-            picks_json: picksArr,
+            picks_json: picks_json,
             imageDataUrl: dataURL,
             ua: navigator.userAgent
           };
