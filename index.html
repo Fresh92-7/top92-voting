@@ -371,7 +371,7 @@
     @media (max-width:600px){
       .wrap{padding:12px}
       .overlay-logo{
-        padding:16px 0 4px;
+        padding:12px 0 0;
         align-items:center;
       }
       .overlay-logo .fresh-logo{
@@ -382,8 +382,8 @@
         margin:0 auto 4px;
       }
       .overlay-logo img:not(.fresh-logo){
-        width:58vw;
-        max-width:280px;
+        width:min(78vw,360px);
+        max-width:360px;
       }
       .az-wrap .controls{
         display:grid;
@@ -423,18 +423,18 @@
       footer{margin:14px 0}
       #playerWrap{
         position:fixed;
-        left:0;
-        right:0;
-        top:0;
-        bottom:auto;
+        left:12px;
+        right:12px;
+        bottom:16px;
+        top:auto;
         max-width:none;
-        width:100%;
-        padding:8px 10px;
-        border-radius:0 0 14px 14px;
+        width:auto;
+        padding:10px;
+        border-radius:14px;
         display:none;
         min-height:auto;
         box-shadow:0 6px 16px rgba(0,0,0,.45);
-        z-index:5;
+        z-index:9;
       }
       #playerHead{
         margin-bottom:4px;
