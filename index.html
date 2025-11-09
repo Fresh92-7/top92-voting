@@ -372,18 +372,20 @@
       .wrap{padding:12px}
       .overlay-logo{
         padding:12px 0 0;
+        flex-direction:column;
         align-items:center;
+        gap:4px;
       }
       .overlay-logo .fresh-logo{
         position:static;
         transform:none;
-        width:46vw;
-        max-width:220px;
+        width:42vw;
+        max-width:200px;
         margin:0 auto 4px;
       }
       .overlay-logo img:not(.fresh-logo){
-        width:min(78vw,360px);
-        max-width:360px;
+        width:min(60vw,260px);
+        max-width:260px;
       }
       .az-wrap .controls{
         display:grid;
@@ -391,16 +393,18 @@
         gap:8px;
       }
       .az{
-        display:flex;
-        overflow-x:auto;
-        gap:8px;
+        display:grid;
+        grid-template-columns:repeat(7, minmax(0,1fr));
+        gap:6px;
         padding-bottom:6px;
-        scroll-snap-type:x mandatory;
+        justify-items:stretch;
       }
       .az button{
-        flex:0 0 auto;
-        min-width:40px;
-        scroll-snap-align:start;
+        min-width:0;
+        width:100%;
+        scroll-snap-align:none;
+        padding:6px 4px;
+        font-size:12px;
       }
       .list{max-height:58vh}
       .row{
