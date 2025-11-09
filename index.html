@@ -1019,6 +1019,7 @@
       playerArtistEl.textContent = 'Preview will play below.';
     });
 
+    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
     let mediaLoadHandler = null;
 
     function openPreview(song){
@@ -1078,38 +1079,41 @@
         mediaLoadHandler = null;
       }
 
-      // Attach a single-shot load handler to gently request autoplay
-      mediaLoadHandler = () => {
-        player.removeEventListener('load', mediaLoadHandler);
-        mediaLoadHandler = null;
-        setTimeout(() => {
-          try {
-            // Spotify embed
-            player.contentWindow.postMessage({ command: 'play' }, '*');
-          } catch(e){}
-          try {
-            player.contentWindow.postMessage(JSON.stringify({ command: 'play' }), '*');
-          } catch(e){}
-          try {
-            // YouTube iframe API style
-            player.contentWindow.postMessage(JSON.stringify({
-              event: 'command',
-              func: 'playVideo',
-              args: []
-            }), '*');
-          } catch(e){}
-          try {
-            // SoundCloud widget API style
-            player.contentWindow.postMessage(JSON.stringify({ method: 'play' }), '*');
-          } catch(e){}
-        }, 220);
-      };
-      player.addEventListener('load', mediaLoadHandler);
+      if (isMobile){
+        // On mobile, rely on direct autoplay=1 off the user gesture that called openPreview
+        player.src = src;
+      } else {
+        // Desktop / non-mobile: use a single load handler to gently request autoplay
+        mediaLoadHandler = () => {
+          player.removeEventListener('load', mediaLoadHandler);
+          mediaLoadHandler = null;
+          setTimeout(() => {
+            try {
+              // Spotify-style
+              player.contentWindow.postMessage({ command: 'play' }, '*');
+            } catch(e){}
+            try {
+              player.contentWindow.postMessage(JSON.stringify({ command: 'play' }), '*');
+            } catch(e){}
+            try {
+              // YouTube iframe API style
+              player.contentWindow.postMessage(JSON.stringify({
+                event: 'command',
+                func: 'playVideo',
+                args: []
+              }), '*');
+            } catch(e){}
+            try {
+              // SoundCloud widget API style
+              player.contentWindow.postMessage(JSON.stringify({ method: 'play' }), '*');
+            } catch(e){}
+          }, 220);
+        };
+        player.addEventListener('load', mediaLoadHandler);
+        player.src = src;
+      }
 
-      // Set source AFTER listeners are attached so the very first click is captured
-      player.src = src;
-
-      // Show the player (desktop and mobile share the same behavior)
+      // Show the player (shared behavior)
       playerWrap.style.display = 'flex';
     }
 
