@@ -779,7 +779,6 @@
     const nameEl    = document.getElementById('name');
     const mobileEl  = document.getElementById('mobile');
     const emailEl   = document.getElementById('email');
-    const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent || '');
 
     // Build A–Z filter
     function buildAZ(){
@@ -1023,34 +1022,21 @@
     function openPreview(song){
       if (!song) return;
 
-      // Decide provider: on mobile, prefer YouTube/SoundCloud over Spotify to play more reliably
-      let provider = '';
-      if (isMobile) {
-        if (song.youtube) provider = 'youtube';
-        else if (song.soundcloud) provider = 'soundcloud';
-        else if (song.spotify) provider = 'spotify';
-      } else {
-        if (song.spotify) provider = 'spotify';
-        else if (song.youtube) provider = 'youtube';
-        else if (song.soundcloud) provider = 'soundcloud';
-      }
-
-      if (!provider) return;
-
       let src = '';
       let height = 152;
       let isSpotify = false;
       let isYouTube = false;
       let isSoundCloud = false;
 
-      // Reset classes
-      playerWrap.classList.remove('spotify','youtube','soundcloud');
+      // Reset provider-specific classes
+      playerWrap.classList.remove('spotify', 'youtube', 'soundcloud');
 
-      // Labels
+      // Update labels
       if (playerTitleEl) playerTitleEl.textContent = song.title || 'Preview';
       if (playerArtistEl) playerArtistEl.textContent = song.artist || '';
 
-      if (provider === 'spotify'){
+      // Build provider src
+      if (song.spotify){
         let url = song.spotify;
         if (!url.startsWith('http')){
           url = `https://open.spotify.com/track/${url}`;
@@ -1061,20 +1047,19 @@
         height = 152;
         playerWrap.classList.add('spotify');
         isSpotify = true;
-      }
-      else if (provider === 'youtube'){
+      } else if (song.youtube){
         let yt = String(song.youtube).trim();
         const srcAttr = yt.match(/src\s*=\s*"([^"]+)"/i);
         if (srcAttr) yt = srcAttr[1];
         const idMatch = yt.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{6,})/);
         const id = idMatch ? idMatch[1] : '';
-        if (!id) return;
-        src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
-        height = 180;
-        playerWrap.classList.add('youtube');
-        isYouTube = true;
-      }
-      else if (provider === 'soundcloud'){
+        if (id){
+          src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+          height = 180;
+          playerWrap.classList.add('youtube');
+          isYouTube = true;
+        }
+      } else if (song.soundcloud){
         const sc = encodeURIComponent(song.soundcloud.trim());
         src = `https://w.soundcloud.com/player/?url=${sc}&auto_play=true&hide_related=true&show_comments=false&visual=false`;
         height = 180;
@@ -1093,16 +1078,18 @@
         player._autoplayHandler = null;
       }
 
-      // Try to auto-play in response to the Preview click.
-      // This is allowed on desktop and may be honoured on some mobile setups.
+      const isMobile = /Mobi|Android/i.test(navigator.userAgent || '');
+
+      // Define a reusable play attempt
       const tryPlay = () => {
-        try { player.contentWindow.postMessage({ command:'play' }, '*'); } catch(e){}
-        try { player.contentWindow.postMessage(JSON.stringify({ command:'play' }), '*'); } catch(e){}
+        try { player.contentWindow.postMessage({ command: 'play' }, '*'); } catch(e){}
+        try { player.contentWindow.postMessage(JSON.stringify({ command: 'play' }), '*'); } catch(e){}
       };
 
+      // For Spotify: buffered attempts after load (desktop + mobile)
       if (isSpotify){
         const onLoad = () => {
-          // A few spaced attempts to avoid the old "stutter" glitch.
+          // a few spaced attempts to handle slow embed load without rapid restart glitch
           setTimeout(tryPlay, 150);
           setTimeout(tryPlay, 450);
           setTimeout(tryPlay, 900);
@@ -1111,23 +1098,16 @@
         player.addEventListener('load', onLoad);
       }
 
-      // For YouTube and SoundCloud, rely primarily on autoplay=1 in the URL;
-      // we still make one best-effort nudge in the same user gesture.
-      if (isYouTube || isSoundCloud){
-        const onLoad = () => {
-          setTimeout(tryPlay, 150);
-        };
-        player._autoplayHandler = onLoad;
-        player.addEventListener('load', onLoad);
-      }
-
-      // Set src AFTER listeners so the first click is captured.
+      // Set src AFTER attaching the load listener
       player.src = src;
 
-      // Immediate attempt within the click handler:
-      tryPlay();
+      // Immediate attempt inside the same click event:
+      // This maximizes the chance that mobile browsers treat it as user-gesture driven.
+      if (isSpotify || isYouTube || isSoundCloud){
+        tryPlay();
+      }
 
-      // Show player
+      // Show the player (desktop + mobile use different CSS, same JS)
       playerWrap.style.display = 'flex';
     }
 
