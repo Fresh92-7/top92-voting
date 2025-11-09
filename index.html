@@ -387,12 +387,27 @@
         width:min(60vw,260px);
         max-width:260px;
       }
+      .az-wrap {
+        padding-left: 0;
+        padding-right: 0;
+      }
+      .az-top {
+        align-items: stretch;
+      }
+      .az-left {
+        width: 100%;
+      }
       .az-wrap .controls{
         display:grid;
         grid-template-columns:1fr;
         gap:8px;
+        width:100%;
+      }
+      .az-wrap .controls > *{
+        width:100%;
       }
       .az{
+        width:100%;
         display:grid;
         grid-template-columns:repeat(7, minmax(0,1fr));
         gap:6px;
