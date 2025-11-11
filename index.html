@@ -1079,11 +1079,16 @@
           try { player.contentWindow.postMessage({ command: 'play' }, '*'); } catch(e){}
           try { player.contentWindow.postMessage(JSON.stringify({ command: 'play' }), '*'); } catch(e){}
         };
+
         const onLoad = () => {
-          setTimeout(tryPlay, 150);
-          setTimeout(tryPlay, 450);
-          setTimeout(tryPlay, 900);
+          // Ensure this handler only runs once per load
+          player.removeEventListener('load', onLoad);
+          player._autoplayHandler = null;
+
+          // Single, slightly delayed play trigger to avoid the start/stop glitch
+          setTimeout(tryPlay, 220);
         };
+
         player._autoplayHandler = onLoad;
         player.addEventListener('load', onLoad);
       }
